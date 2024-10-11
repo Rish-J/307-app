@@ -1,10 +1,12 @@
 // backend.js
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
 
 app.use(express.json());
+app.use(cors());
 
 const users = {
     users_list: [
@@ -76,6 +78,10 @@ const findUserByNameAndJob = (name, job) => {
     );
 };
 
+const idGenerator = () => {
+  return Math.round(Math.random()*100000)
+}
+
 app.get("/users", (req, res) => {
     const name = req.query.name;
     const job = req.query.job;
@@ -118,8 +124,9 @@ app.get("/users/:id", (req, res) => {
   
 app.post("/users", (req, res) => {
     const userToAdd = req.body;
+    userToAdd.id = idGenerator();
     addUser(userToAdd);
-    res.send();
+    res.status(201).send(userToAdd);
 });
 
 app.delete("/users", (req, res) => {
@@ -129,7 +136,7 @@ app.delete("/users", (req, res) => {
     } else {
         deleteUser(userToDelete);
     }
-    res.send();
+    res.status(204).send();
 });
 
 app.listen(port, () => {
